@@ -8,8 +8,14 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.DriverManager;  
 import java.sql.SQLException;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
@@ -23,12 +29,13 @@ public class OfficeStyle extends javax.swing.JFrame {
     public OfficeStyle() {
         initComponents();
         Connect();
+        OfficeStyle_Load();
     }
     
     //Connect with Database.
     Connection conn;
     PreparedStatement pst;
-    
+    ResultSet rs; //rs is for Load jTable
     public void Connect()
     {
         try {
@@ -74,9 +81,16 @@ public class OfficeStyle extends javax.swing.JFrame {
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
         jLabel3.setText("Status");
 
+        cboxStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Available", "Not Available" }));
+
         btxUpdate.setText("Update");
 
         btxAdd.setText("Add");
+        btxAdd.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btxAddActionPerformed(evt);
+            }
+        });
 
         btxCancel.setText("Cancel");
 
@@ -96,6 +110,11 @@ public class OfficeStyle extends javax.swing.JFrame {
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
+            }
+        });
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
             }
         });
         jScrollPane1.setViewportView(jTable1);
@@ -175,6 +194,81 @@ public class OfficeStyle extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btxAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxAddActionPerformed
+        String stylenm = txtStyle.getText();
+        String status = cboxStatus.getSelectedItem().toString();
+        
+        //pst is for calling query SQL
+        try {
+            pst = conn.prepareStatement("insert into ostyle(stylename,status)values(?,?)");
+            pst.setString(1, stylenm);
+            pst.setString(2, status);
+            int k=pst.executeUpdate();
+            
+            if (k==1) //Successfully
+            {
+                JOptionPane.showMessageDialog(this, "A New Office Style has created");
+                txtStyle.setText("");
+                cboxStatus.setSelectedIndex(-1); //Set width (size of combobox)
+                txtStyle.requestFocus();
+                OfficeStyle_Load(); //Refresh jTable for new data
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Error. Please try again");
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btxAddActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        int slctIndex = jTable1.getSelectedRow();
+        
+        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
+        txtStyle.setText(d1.getValueAt(slctIndex, 1).toString());
+        cboxStatus.setSelectedItem(d1.getValueAt(slctIndex, 2).toString());
+                
+    }//GEN-LAST:event_jTable1MouseClicked
+    
+
+    //Load Function for jTable
+    public void OfficeStyle_Load()
+    {
+        int c;
+        try {
+            pst = conn.prepareStatement("Select * from ostyle"); //query SQL
+            rs = pst.executeQuery();
+            
+            ResultSetMetaData rsd = rs.getMetaData();
+            c= rsd.getColumnCount(); //get ColumnCount from database
+            
+            DefaultTableModel d = (DefaultTableModel)jTable1.getModel(); //DefaultTableModel must import from swing
+            d.setRowCount(0);
+            
+            while(rs.next())
+            {
+                Vector v2 = new Vector(); //Vector like ArrayList
+                
+                for(int i=1;i<=c;i++)
+                {
+                    v2.add(rs.getString("id"));
+                    v2.add(rs.getString("stylename"));
+                    v2.add(rs.getString("status"));
+                }
+                d.addRow(v2); // d represent for row o. jTable . c is row o. database
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
+    
     /**
      * @param args the command line arguments
      */
