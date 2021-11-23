@@ -54,6 +54,11 @@ public class Login extends javax.swing.JFrame {
         });
 
         btCancel.setText("Cancel");
+        btCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btCancelActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -144,6 +149,10 @@ public class Login extends javax.swing.JFrame {
             txtUser.requestFocus(); //Clear all in textbox then leave cursor at txtUser
         }
     }//GEN-LAST:event_btLoginActionPerformed
+
+    private void btCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_btCancelActionPerformed
 
     /**
      * @param args the command line arguments

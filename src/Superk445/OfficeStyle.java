@@ -84,6 +84,11 @@ public class OfficeStyle extends javax.swing.JFrame {
         cboxStatus.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Available", "Not Available" }));
 
         btxUpdate.setText("Update");
+        btxUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btxUpdateActionPerformed(evt);
+            }
+        });
 
         btxAdd.setText("Add");
         btxAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -93,8 +98,18 @@ public class OfficeStyle extends javax.swing.JFrame {
         });
 
         btxCancel.setText("Cancel");
+        btxCancel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btxCancelActionPerformed(evt);
+            }
+        });
 
         btxDelete.setText("Delete");
+        btxDelete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btxDeleteActionPerformed(evt);
+            }
+        });
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -193,7 +208,8 @@ public class OfficeStyle extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    //Add button
     private void btxAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxAddActionPerformed
         String stylenm = txtStyle.getText();
         String status = cboxStatus.getSelectedItem().toString();
@@ -224,6 +240,7 @@ public class OfficeStyle extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btxAddActionPerformed
 
+    //MouseClick jTable
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
         DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
         int slctIndex = jTable1.getSelectedRow();
@@ -232,7 +249,85 @@ public class OfficeStyle extends javax.swing.JFrame {
         txtStyle.setText(d1.getValueAt(slctIndex, 1).toString());
         cboxStatus.setSelectedItem(d1.getValueAt(slctIndex, 2).toString());
                 
+        btxAdd.setEnabled(false);
     }//GEN-LAST:event_jTable1MouseClicked
+
+    //Update button
+    private void btxUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxUpdateActionPerformed
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        int slctIndex = jTable1.getSelectedRow();
+        
+        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
+        
+        
+        
+        String stylenm = txtStyle.getText();
+        String status = cboxStatus.getSelectedItem().toString();
+        
+        //pst is for calling query SQL
+        try {
+            pst = conn.prepareStatement("update ostyle set stylename = ?, status = ? where id = ?");
+            pst.setString(1, stylenm);
+            pst.setString(2, status);
+            pst.setInt(3, id); //Need ID to identity e. which need to be update
+            int k=pst.executeUpdate();
+            
+            if (k==1) //Successfully
+            {
+                JOptionPane.showMessageDialog(this, "Updated Successfully");
+                txtStyle.setText("");
+                cboxStatus.setSelectedIndex(-1); //Set width (size of combobox)
+                txtStyle.requestFocus();
+                OfficeStyle_Load(); //Refresh jTable for new data
+                btxAdd.setEnabled(true); //Hide when click on jTable
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Error. Please try again");
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btxUpdateActionPerformed
+    
+    //Delete Button
+    private void btxDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxDeleteActionPerformed
+        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        int slctIndex = jTable1.getSelectedRow();
+        
+        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
+        
+        //pst is for calling query SQL
+        try {
+            pst = conn.prepareStatement("delete from ostyle where id = ?");
+            pst.setInt(1, id); //Just need ID for delete function
+            int k=pst.executeUpdate();
+            
+            if (k==1) //Successfully
+            {
+                JOptionPane.showMessageDialog(this, "Deleted Successfully");
+                txtStyle.setText("");
+                cboxStatus.setSelectedIndex(-1); //Set width (size of combobox)
+                txtStyle.requestFocus();
+                OfficeStyle_Load(); //Refresh jTable for new data
+                btxAdd.setEnabled(true);
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this, "Error. Please try again");
+            }
+            
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btxDeleteActionPerformed
+
+    private void btxCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxCancelActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_btxCancelActionPerformed
     
 
     //Load Function for jTable
