@@ -46,6 +46,11 @@ public class Main extends javax.swing.JFrame {
         jButton2.setText("Issue Office");
 
         jButton3.setText("OFFICE");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jButton4.setText("Office Style");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -133,6 +138,11 @@ public class Main extends javax.swing.JFrame {
         OfficeStyle ofs = new OfficeStyle();
         ofs.setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        Office o = new Office();
+        o.setVisible(true);
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
