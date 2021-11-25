@@ -62,6 +62,11 @@ public class Main extends javax.swing.JFrame {
         jButton5.setText("Return Office");
 
         jButton6.setText("Customers");
+        jButton6.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton6ActionPerformed(evt);
+            }
+        });
 
         jButton7.setText("Logout");
 
@@ -143,6 +148,11 @@ public class Main extends javax.swing.JFrame {
         Office o = new Office();
         o.setVisible(true);
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
+        Customers c = new Customers();
+        c.setVisible(true);
+    }//GEN-LAST:event_jButton6ActionPerformed
 
     /**
      * @param args the command line arguments
