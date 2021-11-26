@@ -30,6 +30,7 @@ public class Office extends javax.swing.JFrame {
         initComponents();
         Connect();
         Office();
+        Office_Load();
     }
     
     public class StyleItem
@@ -84,7 +85,45 @@ public class Office extends javax.swing.JFrame {
         }
         
     }
+    // HET GIONG NOTEPAD
     
+    //Load
+     public void Office_Load()
+    {
+        int c;
+        try {
+            pst = conn.prepareStatement("SELECT ostyle.stylename, office.id, office.name, office.style, office.description, office.price FROM office JOIN ostyle ON office.style = ostyle.id "); //query SQL
+            rs = pst.executeQuery();
+            
+            ResultSetMetaData rsd = rs.getMetaData();
+            c= rsd.getColumnCount(); //get ColumnCount from database
+            
+            DefaultTableModel d = (DefaultTableModel)jTable1.getModel(); //DefaultTableModel must import from swing
+            d.setRowCount(0);
+            
+            while(rs.next())
+            {
+                Vector v2 = new Vector(); //Vector like ArrayList
+                
+                for(int i=1;i<=c;i++)
+                {
+                    v2.add(rs.getString("office.id"));
+                     v2.add(rs.getString("ostyle.stylename"));
+                      v2.add(rs.getString("office.name"));
+                       v2.add(rs.getString("office.style"));
+                        v2.add(rs.getString("office.description"));
+                         v2.add(rs.getString("office.price"));
+                          
+                           
+                   
+                }
+                d.addRow(v2); // d represent for row o. jTable . c is row o. database
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -129,6 +168,11 @@ public class Office extends javax.swing.JFrame {
                 btxUpdateActionPerformed(evt);
             }
         });
+        btxUpdate.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btxUpdateKeyPressed(evt);
+            }
+        });
 
         btxAdd.setText("Add");
         btxAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -148,6 +192,11 @@ public class Office extends javax.swing.JFrame {
         btxDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btxDeleteActionPerformed(evt);
+            }
+        });
+        btxDelete.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btxDeleteKeyPressed(evt);
             }
         });
 
@@ -419,6 +468,14 @@ public class Office extends javax.swing.JFrame {
     private void btxCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxCancelActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_btxCancelActionPerformed
+
+    private void btxUpdateKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxUpdateKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btxUpdateKeyPressed
+
+    private void btxDeleteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxDeleteKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btxDeleteKeyPressed
     
 
     //Load Function for jTable
