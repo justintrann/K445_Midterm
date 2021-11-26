@@ -32,6 +32,7 @@ public class RentO extends javax.swing.JFrame {
         initComponents();
         Connect();
         Office();
+        RentO_Load();
     }
     
     public class StyleItem
@@ -105,11 +106,11 @@ public class RentO extends javax.swing.JFrame {
    }
    
     //Load
-    public void Office_Load()
+    public void RentO_Load()
     {
         int c;
         try {
-            pst = conn.prepareStatement("SELECT office.id,office.name,ostyle.stylename,office.description,office.price FROM office JOIN ostyle ON office.style = ostyle.id "); //query SQL
+            pst = conn.prepareStatement("select rent.id,customer.name,office.name,rent.fromdate,rent.todate from rent join customer on rent.custid=customer.id join office on rent.officeid=office.id "); //query SQL
             rs = pst.executeQuery();
             
             ResultSetMetaData rsd = rs.getMetaData();
@@ -124,11 +125,11 @@ public class RentO extends javax.swing.JFrame {
                 
                 for(int i=1;i<=c;i++)
                 {
-                    v2.add(rs.getString("office.id"));
+                    v2.add(rs.getString("rent.id"));
+                    v2.add(rs.getString("customer.name"));
                     v2.add(rs.getString("office.name"));
-                    v2.add(rs.getString("ostyle.stylename"));
-                    v2.add(rs.getString("office.description"));
-                    v2.add(rs.getString("office.price"));
+                    v2.add(rs.getString("rent.fromdate"));
+                    v2.add(rs.getString("rent.todate"));
                 }
                 d.addRow(v2); // d represent for row o. jTable . c is row o. database
             }
@@ -220,11 +221,11 @@ public class RentO extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Member ID", "Customer Name", "Office", "Date", "Return Date"
+                "ID", "Customer Name", "Office", "Date", "Return Date"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -343,10 +344,13 @@ public class RentO extends javax.swing.JFrame {
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                                     .addComponent(jDate2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(jLabel5))
-                                .addGap(33, 33, 33)
-                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(btxAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGap(24, 24, 24)
+                                        .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(btxAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))))
                             .addComponent(jDate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
@@ -474,38 +478,7 @@ public class RentO extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
-    //Load Function for jTable
-    public void RentO_Load()
-    {
-        int c;
-        try {
-            pst = conn.prepareStatement("Select * from ostyle"); //query SQL
-            rs = pst.executeQuery();
-            
-            ResultSetMetaData rsd = rs.getMetaData();
-            c= rsd.getColumnCount(); //get ColumnCount from database
-            
-            DefaultTableModel d = (DefaultTableModel)jTable1.getModel(); //DefaultTableModel must import from swing
-            d.setRowCount(0);
-            
-            while(rs.next())
-            {
-                Vector v2 = new Vector(); //Vector like ArrayList
-                
-                for(int i=1;i<=c;i++)
-                {
-                    v2.add(rs.getString("id"));
-                    v2.add(rs.getString("stylename"));
-                    v2.add(rs.getString("status"));
-                }
-                d.addRow(v2); // d represent for row o. jTable . c is row o. database
-            }
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(RentO.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
+
     //test
     
     /**
