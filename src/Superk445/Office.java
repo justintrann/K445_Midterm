@@ -88,6 +88,7 @@ public class Office extends javax.swing.JFrame {
     // HET GIONG NOTEPAD
     
     //Load
+    /*
      public void Office_Load()
     {
         int c;
@@ -123,7 +124,41 @@ public class Office extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }*/
+    
+    public void Office_Load()
+    {
+        int c;
+        try {
+            pst = conn.prepareStatement("SELECT office.id,office.name,ostyle.stylename,office.description,office.price FROM office JOIN ostyle ON office.style = ostyle.id "); //query SQL
+            rs = pst.executeQuery();
+            
+            ResultSetMetaData rsd = rs.getMetaData();
+            c= rsd.getColumnCount(); //get ColumnCount from database
+            
+            DefaultTableModel d = (DefaultTableModel)jTable1.getModel(); //DefaultTableModel must import from swing
+            d.setRowCount(0);
+            
+            while(rs.next())
+            {
+                Vector v2 = new Vector(); //Vector like ArrayList
+                
+                for(int i=1;i<=c;i++)
+                {
+                    v2.add(rs.getString("office.id"));
+                    v2.add(rs.getString("office.name"));
+                    v2.add(rs.getString("ostyle.stylename"));
+                    v2.add(rs.getString("office.description"));
+                    v2.add(rs.getString("office.price"));
+                }
+                d.addRow(v2); // d represent for row o. jTable . c is row o. database
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OfficeStyle.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -168,11 +203,6 @@ public class Office extends javax.swing.JFrame {
                 btxUpdateActionPerformed(evt);
             }
         });
-        btxUpdate.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                btxUpdateKeyPressed(evt);
-            }
-        });
 
         btxAdd.setText("Add");
         btxAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -192,11 +222,6 @@ public class Office extends javax.swing.JFrame {
         btxDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btxDeleteActionPerformed(evt);
-            }
-        });
-        btxDelete.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyPressed(java.awt.event.KeyEvent evt) {
-                btxDeleteKeyPressed(evt);
             }
         });
 
@@ -401,15 +426,20 @@ public class Office extends javax.swing.JFrame {
         
         
         
-        String stylenm = txtName.getText();
-        String status = cboxStyle.getSelectedItem().toString();
+        String name = txtName.getText();
+        StyleItem sitem= (StyleItem) cboxStyle.getSelectedItem();
+        String desc = txtDesc.getText();
+        int price = Integer.parseInt(txtPrice.getText());
+        
         
         //pst is for calling query SQL
         try {
-            pst = conn.prepareStatement("update ostyle set stylename = ?, status = ? where id = ?");
-            pst.setString(1, stylenm);
-            pst.setString(2, status);
-            pst.setInt(3, id); //Need ID to identity e. which need to be update
+            pst = conn.prepareStatement("update office set name = ?,style = ?,description = ?,price = ? where id = ?");
+            pst.setString(1, name);
+            pst.setInt(2, sitem.id);
+            pst.setString(3, desc); //Need ID to identity e. which need to be update
+            pst.setInt(4,price);
+            pst.setInt(5, id);
             int k=pst.executeUpdate();
             
             if (k==1) //Successfully
@@ -417,8 +447,11 @@ public class Office extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "Updated Successfully");
                 txtName.setText("");
                 cboxStyle.setSelectedIndex(-1); //Set width (size of combobox)
-                txtName.requestFocus();
-                OfficeStyle_Load(); //Refresh jTable for new data
+                txtDesc.setText("");
+                txtPrice.setText("");
+               // OfficeStyle_Load(); //Refresh jTable for new data
+                
+                
                 btxAdd.setEnabled(true); //Hide when click on jTable
             }
             else
@@ -468,14 +501,6 @@ public class Office extends javax.swing.JFrame {
     private void btxCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxCancelActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_btxCancelActionPerformed
-
-    private void btxUpdateKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxUpdateKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btxUpdateKeyPressed
-
-    private void btxDeleteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxDeleteKeyPressed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btxDeleteKeyPressed
     
 
     //Load Function for jTable

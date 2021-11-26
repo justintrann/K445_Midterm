@@ -89,6 +89,11 @@ public class OfficeStyle extends javax.swing.JFrame {
                 btxUpdateActionPerformed(evt);
             }
         });
+        btxUpdate.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btxUpdateKeyPressed(evt);
+            }
+        });
 
         btxAdd.setText("Add");
         btxAdd.addActionListener(new java.awt.event.ActionListener() {
@@ -108,6 +113,11 @@ public class OfficeStyle extends javax.swing.JFrame {
         btxDelete.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btxDeleteActionPerformed(evt);
+            }
+        });
+        btxDelete.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                btxDeleteKeyPressed(evt);
             }
         });
 
@@ -328,6 +338,14 @@ public class OfficeStyle extends javax.swing.JFrame {
     private void btxCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxCancelActionPerformed
         this.setVisible(false);
     }//GEN-LAST:event_btxCancelActionPerformed
+
+    private void btxUpdateKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxUpdateKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btxUpdateKeyPressed
+
+    private void btxDeleteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxDeleteKeyPressed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btxDeleteKeyPressed
     
 
     //Load Function for jTable
