@@ -4,12 +4,14 @@
  */
 package Superk445;
 
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.DriverManager;  
 import java.sql.SQLException;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.text.SimpleDateFormat;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,16 +23,15 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Justin
  */
-public class Office extends javax.swing.JFrame {
+public class RentO extends javax.swing.JFrame {
 
     /**
      * Creates new form OfficeStyle
      */
-    public Office() {
+    public RentO() {
         initComponents();
         Connect();
         Office();
-        Office_Load();
     }
     
     public class StyleItem
@@ -62,31 +63,47 @@ public class Office extends javax.swing.JFrame {
             Class.forName("com.mysql.jdbc.Driver");
             conn = DriverManager.getConnection("jdbc:mysql://localhost/k445","root","");
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RentO.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
-            Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RentO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
-    public void Office()
-    {
+   public class OfficeItem
+   {
+       int id;
+       String name;
+       
+       public OfficeItem(int id,String name)
+       {
+           this.id = id;
+           this.name = name;
+       }
+       
+       public String toString()
+       {
+           return name;
+       }
+   }
+    
+   public void Office()
+   {
         try {
-            pst = conn.prepareStatement("select * from ostyle");
+            pst = conn.prepareStatement("select * from office");
             rs = pst.executeQuery();
-            cboxStyle.removeAllItems(); //Make sure clear 
+            txtOffice.removeAllItems(); //Make sure clear 
             
             while (rs.next())
             {
-                cboxStyle.addItem(new StyleItem (rs.getInt(1),rs.getString(2))); // 1 means row 1 of ostyle table
+                txtOffice.addItem(new OfficeItem (rs.getInt(1),rs.getString(2))); // 1 means row 1 of ostyle table
             }
             
         } catch (SQLException ex) {
             Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-    }
-    // HET GIONG NOTEPAD
-    
+   }
+   
     //Load
     public void Office_Load()
     {
@@ -133,8 +150,7 @@ public class Office extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        txtName = new javax.swing.JTextField();
-        cboxStyle = new javax.swing.JComboBox();
+        txtCustName = new javax.swing.JTextField();
         btxUpdate = new javax.swing.JButton();
         btxAdd = new javax.swing.JButton();
         btxCancel = new javax.swing.JButton();
@@ -143,20 +159,23 @@ public class Office extends javax.swing.JFrame {
         jTable1 = new javax.swing.JTable();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        txtDesc = new javax.swing.JTextArea();
-        txtPrice = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtMemberID = new javax.swing.JTextField();
+        jDate1 = new com.toedter.calendar.JDateChooser();
+        jDate2 = new com.toedter.calendar.JDateChooser();
+        txtOffice = new javax.swing.JComboBox();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        jLabel1.setText("Office(s)");
+        jLabel1.setText("Rent Office");
 
         jLabel2.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel2.setText("Name");
+        jLabel2.setText("Member ID");
 
         jLabel3.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel3.setText("Style");
+        jLabel3.setText("Customer Name");
 
         btxUpdate.setText("Update");
         btxUpdate.addActionListener(new java.awt.event.ActionListener() {
@@ -201,11 +220,11 @@ public class Office extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ID", "Name", "Style", "Description", "Price"
+                "ID", "Member ID", "Customer Name", "Office", "Date", "Return Date"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -220,100 +239,117 @@ public class Office extends javax.swing.JFrame {
         jScrollPane1.setViewportView(jTable1);
 
         jLabel4.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel4.setText("Description");
+        jLabel4.setText("Office");
 
         jLabel5.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
-        jLabel5.setText("Price per month");
+        jLabel5.setText("Return Date");
 
-        txtDesc.setColumns(20);
-        txtDesc.setRows(5);
-        jScrollPane2.setViewportView(txtDesc);
+        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 18)); // NOI18N
+        jLabel6.setText("Date");
+
+        txtMemberID.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                txtMemberIDKeyPressed(evt);
+            }
+        });
+
+        jButton1.setText("Find");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addGap(12, 12, 12)
-                                .addComponent(btxDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 18, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                .addGap(0, 0, Short.MAX_VALUE)
-                                .addComponent(btxAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btxCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 95, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 489, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addContainerGap())))
-            .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel5)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtPrice))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                .addGroup(jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel2)
-                                    .addGap(48, 48, 48))
-                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                                    .addComponent(jLabel4)
-                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btxAdd, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btxDelete, javax.swing.GroupLayout.DEFAULT_SIZE, 102, Short.MAX_VALUE)))
+                            .addComponent(jLabel4)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel5)
+                            .addComponent(jLabel6))
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(89, 89, 89)
+                                .addComponent(btxCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 20, Short.MAX_VALUE)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(txtMemberID, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(jDate1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(22, 22, 22))
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                                .addGap(69, 69, 69)
+                                                .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                            .addComponent(jDate2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 489, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(58, 58, 58))))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(13, 13, 13)
+                                .addComponent(jLabel1))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel3)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                                .addComponent(txtName, javax.swing.GroupLayout.Alignment.LEADING)
-                                .addComponent(cboxStyle, javax.swing.GroupLayout.Alignment.LEADING, 0, 200, Short.MAX_VALUE))
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(18, 18, 18)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(txtCustName, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(txtOffice, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addContainerGap()
                         .addComponent(jLabel1)
-                        .addGap(26, 26, 26)
+                        .addGap(37, 37, 37)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel2)
-                            .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(txtMemberID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jButton1))
+                        .addGap(31, 31, 31)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(txtCustName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(32, 32, 32)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(txtOffice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(44, 44, 44)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3)
-                            .addComponent(cboxStyle, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(34, 34, 34)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(24, 24, 24)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel5)
-                            .addComponent(txtPrice, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(39, 39, 39)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(btxAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel6)
+                                .addGap(30, 30, 30)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(jDate2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jLabel5))
+                                .addGap(33, 33, 33)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(btxAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btxUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(jDate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 403, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 10, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btxDelete, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btxCancel, javax.swing.GroupLayout.PREFERRED_SIZE, 49, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -344,28 +380,31 @@ public class Office extends javax.swing.JFrame {
     
     //Add button
     private void btxAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxAddActionPerformed
-        String name = txtName.getText();
-        StyleItem sitem = (StyleItem) cboxStyle.getSelectedItem();
-        String desc = txtDesc.getText();
-        int price = Integer.parseInt(txtPrice.getText());
-
-        //pst is for calling query SQL
-        try {
-            pst = conn.prepareStatement("insert into office(name,style,description,price)values(?,?,?,?)");
-            pst.setString(1, name); //Row 1=>4
-            pst.setInt(2, sitem.id);
-            pst.setString(3, desc);
-            pst.setInt(4, price);
+      String mid = txtMemberID.getText();
+      OfficeItem oitem = (OfficeItem) txtOffice.getSelectedItem();
+      
+      SimpleDateFormat date_format = new SimpleDateFormat("yyyy-MM-dd");
+      String date1 = date_format.format(jDate1.getDate());
+      
+      SimpleDateFormat date_format1 = new SimpleDateFormat("yyyy-MM-dd");
+      String date2 = date_format.format(jDate2.getDate());
+      
+      try {
+            pst = conn.prepareStatement("insert into rent(custid,officeid,fromdate,todate)values(?,?,?,?)");
+            pst.setString(1, mid); //Row 1=>4
+            pst.setInt(2, oitem.id);
+            pst.setString(3, date1);
+            pst.setString(4, date2);
             int k=pst.executeUpdate();
             
             if (k==1) //Successfully
             {
-                JOptionPane.showMessageDialog(this, "A New Office has created");
+                JOptionPane.showMessageDialog(this, "Successfully");
                 
-                txtName.setText("");
-                cboxStyle.setSelectedIndex(-1); //Set width (size of combobox)
-                txtDesc.setText("");
-                txtPrice.setText(""); //FLAGGG
+                txtMemberID.setText("");
+                txtOffice.setSelectedIndex(-1); //Set width (size of combobox)
+                txtCustName.setText("");
+                
                // txtName.requestFocus();
                // OfficeStyle_Load(); //Refresh jTable for new data
             }
@@ -378,91 +417,22 @@ public class Office extends javax.swing.JFrame {
         } catch (SQLException ex) {
             Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
         }
+      
     }//GEN-LAST:event_btxAddActionPerformed
 
     //MouseClick jTable
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int slctIndex = jTable1.getSelectedRow();
-        
-        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
-        txtName.setText(d1.getValueAt(slctIndex, 1).toString());
-        cboxStyle.setSelectedItem(d1.getValueAt(slctIndex, 2).toString());
-                
-        btxAdd.setEnabled(false);
+       
     }//GEN-LAST:event_jTable1MouseClicked
 
     //Update button
     private void btxUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxUpdateActionPerformed
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int slctIndex = jTable1.getSelectedRow();
-        
-        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
-        
-        
-        
-        String stylenm = txtName.getText();
-        String status = cboxStyle.getSelectedItem().toString();
-        
-        //pst is for calling query SQL
-        try {
-            pst = conn.prepareStatement("update ostyle set stylename = ?, status = ? where id = ?");
-            pst.setString(1, stylenm);
-            pst.setString(2, status);
-            pst.setInt(3, id); //Need ID to identity e. which need to be update
-            int k=pst.executeUpdate();
-            
-            if (k==1) //Successfully
-            {
-                JOptionPane.showMessageDialog(this, "Updated Successfully");
-                txtName.setText("");
-                cboxStyle.setSelectedIndex(-1); //Set width (size of combobox)
-                txtName.requestFocus();
-                OfficeStyle_Load(); //Refresh jTable for new data
-                btxAdd.setEnabled(true); //Hide when click on jTable
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(this, "Error. Please try again");
-            }
-            
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
-        }
+     
     }//GEN-LAST:event_btxUpdateActionPerformed
     
     //Delete Button
     private void btxDeleteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxDeleteActionPerformed
-        DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
-        int slctIndex = jTable1.getSelectedRow();
-        
-        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
-        
-        //pst is for calling query SQL
-        try {
-            pst = conn.prepareStatement("delete from ostyle where id = ?");
-            pst.setInt(1, id); //Just need ID for delete function
-            int k=pst.executeUpdate();
-            
-            if (k==1) //Successfully
-            {
-                JOptionPane.showMessageDialog(this, "Deleted Successfully");
-                txtName.setText("");
-                cboxStyle.setSelectedIndex(-1); //Set width (size of combobox)
-                txtName.requestFocus();
-                OfficeStyle_Load(); //Refresh jTable for new data
-                btxAdd.setEnabled(true);
-            }
-            else
-            {
-                JOptionPane.showMessageDialog(this, "Error. Please try again");
-            }
-            
-            
-        } catch (SQLException ex) {
-            Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    
     }//GEN-LAST:event_btxDeleteActionPerformed
 
     private void btxCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btxCancelActionPerformed
@@ -476,10 +446,36 @@ public class Office extends javax.swing.JFrame {
     private void btxDeleteKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_btxDeleteKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_btxDeleteKeyPressed
-    
+
+    private void txtMemberIDKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtMemberIDKeyPressed
+       
+    }//GEN-LAST:event_txtMemberIDKeyPressed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String mid = txtMemberID.getText();
+            
+            try {
+                pst = conn.prepareStatement("select * from customer where id = ?");
+                pst.setString(1, mid);
+                rs = pst.executeQuery();
+                
+                if (rs.next() == false)
+                {
+                    JOptionPane.showMessageDialog(this, "Cannot find this customer");
+                }
+                else
+                {
+                    String cname = rs.getString("name"); //get Name from customer table
+                    txtCustName.setText(cname.trim());
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(RentO.class.getName()).log(Level.SEVERE, null, ex);    
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     //Load Function for jTable
-    public void OfficeStyle_Load()
+    public void RentO_Load()
     {
         int c;
         try {
@@ -506,7 +502,7 @@ public class Office extends javax.swing.JFrame {
             }
             
         } catch (SQLException ex) {
-            Logger.getLogger(Office.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(RentO.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
@@ -529,21 +525,23 @@ public class Office extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(Office.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RentO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(Office.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RentO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(Office.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RentO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(Office.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RentO.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Office().setVisible(true);
+                new RentO().setVisible(true);
             }
         });
     }
@@ -553,18 +551,20 @@ public class Office extends javax.swing.JFrame {
     private javax.swing.JButton btxCancel;
     private javax.swing.JButton btxDelete;
     private javax.swing.JButton btxUpdate;
-    private javax.swing.JComboBox cboxStyle;
+    private javax.swing.JButton jButton1;
+    private com.toedter.calendar.JDateChooser jDate1;
+    private com.toedter.calendar.JDateChooser jDate2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable jTable1;
-    private javax.swing.JTextArea txtDesc;
-    private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtPrice;
+    private javax.swing.JTextField txtCustName;
+    private javax.swing.JTextField txtMemberID;
+    private javax.swing.JComboBox txtOffice;
     // End of variables declaration//GEN-END:variables
 }
