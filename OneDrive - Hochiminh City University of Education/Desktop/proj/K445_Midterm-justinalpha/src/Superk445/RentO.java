@@ -432,7 +432,16 @@ public class RentO extends javax.swing.JFrame {
 
     //MouseClick jTable
     private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
-       
+       DefaultTableModel d1 = (DefaultTableModel)jTable1.getModel();
+        int slctIndex = jTable1.getSelectedRow();
+        
+        int id = Integer.parseInt(d1.getValueAt(slctIndex, 0).toString());
+        txtCustName.setText(d1.getValueAt(slctIndex, 1).toString());
+        txtOffice.setSelectedItem(d1.getValueAt(slctIndex, 2).toString());
+       // jDate1.setString(d1.getValueAt(slctIndex, 3));
+       // txtPrice.setText(d1.getValueAt(slctIndex, 4).toString());
+
+        btxAdd.setEnabled(false);
     }//GEN-LAST:event_jTable1MouseClicked
 
     //Update button
